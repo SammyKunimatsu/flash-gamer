@@ -99,7 +99,6 @@ class _LoginPageState extends State<LoginPage>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Logo
                       Container(
                         width: 100,
                         height: 100,
@@ -124,7 +123,6 @@ class _LoginPageState extends State<LoginPage>
 
                       const SizedBox(height: 24),
 
-                      // Title
                       ShaderMask(
                         shaderCallback: (bounds) => const LinearGradient(
                           colors: [Color(0xFFE9D5FF), Color(0xFFF9A8D4)],
@@ -153,7 +151,6 @@ class _LoginPageState extends State<LoginPage>
 
                       const SizedBox(height: 48),
 
-                      // Form Card
                       GlassCard(
                         child: Form(
                           key: _formKey,
@@ -172,7 +169,6 @@ class _LoginPageState extends State<LoginPage>
 
                               const SizedBox(height: 28),
 
-                              // Email
                               AppTextField(
                                 label: 'Email',
                                 hint: 'seu@email.com',
@@ -194,7 +190,6 @@ class _LoginPageState extends State<LoginPage>
 
                               const SizedBox(height: 20),
 
-                              // Password
                               AppTextField(
                                 label: 'Senha',
                                 hint: '••••••••',
@@ -228,7 +223,6 @@ class _LoginPageState extends State<LoginPage>
 
                               const SizedBox(height: 32),
 
-                              // Login Button
                               AppGradientButton(
                                 label: 'ENTRAR',
                                 icon: Icons.login_rounded,
@@ -238,7 +232,6 @@ class _LoginPageState extends State<LoginPage>
 
                               const SizedBox(height: 16),
 
-                              // Register Button
                               AppOutlinedButton(
                                 label: 'CRIAR CONTA',
                                 icon: Icons.person_add_alt_1_rounded,
