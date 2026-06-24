@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-
 class GradientBackground extends StatelessWidget {
   final Widget child;
   final List<Color> colors;
   final List<double>? stops;
   final AlignmentGeometry begin;
   final AlignmentGeometry end;
-
   const GradientBackground({
     super.key,
     required this.child,
@@ -15,7 +13,6 @@ class GradientBackground extends StatelessWidget {
     this.begin = Alignment.topLeft,
     this.end = Alignment.bottomRight,
   });
-
   factory GradientBackground.darkPurple({Key? key, required Widget child}) {
     return GradientBackground(
       key: key,
@@ -29,7 +26,6 @@ class GradientBackground extends StatelessWidget {
       child: child,
     );
   }
-
   factory GradientBackground.lightPurple({Key? key, required Widget child}) {
     return GradientBackground(
       key: key,
@@ -37,7 +33,6 @@ class GradientBackground extends StatelessWidget {
       child: child,
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return Container(

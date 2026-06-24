@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-
 class GlassCard extends StatelessWidget {
   final Widget child;
   final double borderRadius;
@@ -8,7 +6,6 @@ class GlassCard extends StatelessWidget {
   final Color? backgroundColor;
   final Color? borderColor;
   final double borderWidth;
-
   const GlassCard({
     super.key,
     required this.child,
@@ -18,7 +15,6 @@ class GlassCard extends StatelessWidget {
     this.borderColor,
     this.borderWidth = 1,
   });
-
   @override
   Widget build(BuildContext context) {
     return Container(

@@ -1,22 +1,17 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flashgamer/components/components.dart';
-
 class InitialPage extends StatefulWidget {
   const InitialPage({super.key});
-
   @override
   State<InitialPage> createState() => _InitialPageState();
 }
-
 class _InitialPageState extends State<InitialPage>
     with TickerProviderStateMixin {
-  bool _missionStarted = false;
   late AnimationController _floatCtrl;
   late AnimationController _entranceCtrl;
   late Animation<double> _fadeIn;
   late Animation<Offset> _slideUp;
-
   @override
   void initState() {
     super.initState();
@@ -36,27 +31,22 @@ class _InitialPageState extends State<InitialPage>
         CurvedAnimation(parent: _entranceCtrl, curve: Curves.easeOutCubic));
     _entranceCtrl.forward();
   }
-
   @override
   void dispose() {
     _floatCtrl.dispose();
     _entranceCtrl.dispose();
     super.dispose();
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background
           Container(
             width: double.infinity,
             height: double.infinity,
             color: const Color(0xFFF5F0FF),
           ),
-
-          // Floating decorative shapes
           FloatingShape(
             animation: _floatCtrl,
             top: 30,
@@ -90,8 +80,6 @@ class _InitialPageState extends State<InitialPage>
             shape: BoxShape.circle,
             phaseOffset: 0.6,
           ),
-
-          // Main content
           Center(
             child: FadeTransition(
               opacity: _fadeIn,
@@ -100,7 +88,6 @@ class _InitialPageState extends State<InitialPage>
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Floating avatar
                     AnimatedBuilder(
                       animation: _floatCtrl,
                       builder: (ctx, child) => Transform.translate(
@@ -110,10 +97,7 @@ class _InitialPageState extends State<InitialPage>
                       ),
                       child: const AvatarBadge(level: 12, size: 120),
                     ),
-
                     const SizedBox(height: 24),
-
-                    // Welcome text
                     const Text(
                       'Bem-vindo\nde volta, Herói!',
                       textAlign: TextAlign.center,
@@ -124,9 +108,7 @@ class _InitialPageState extends State<InitialPage>
                         height: 1.1,
                       ),
                     ),
-
                     const SizedBox(height: 12),
-
                     Text(
                       'Sua jornada épica de\naprendizado aguarda. Pronto\npara a próxima fase?',
                       textAlign: TextAlign.center,
@@ -136,19 +118,13 @@ class _InitialPageState extends State<InitialPage>
                         height: 1.5,
                       ),
                     ),
-
                     const SizedBox(height: 32),
-
                     AppGradientButton.pill(
-                      label: _missionStarted
-                          ? 'MISSÃO INICIADA'
-                          : 'COMEÇAR MISSÃO',
-                      icon: _missionStarted
-                          ? Icons.check_rounded
-                          : Icons.rocket_launch_rounded,
-                      onPressed: _missionStarted
-                          ? null
-                          : () => setState(() => _missionStarted = true),
+                      label: 'COMEÇAR MISSÃO',
+                      icon: Icons.rocket_launch_rounded,
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/home');
+                      },
                     ),
                   ],
                 ),

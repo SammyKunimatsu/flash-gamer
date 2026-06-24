@@ -3,7 +3,6 @@ import 'package:http/http.dart' as http;
 import 'api_service.dart';
 import 'token_service.dart';
 import 'package:flutter/foundation.dart';
-
 class AuthService {
   static Future<Map<String, dynamic>> login(String email, String senha) async {
     try {
@@ -12,7 +11,6 @@ class AuthService {
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email, 'senha': senha}),
       );
-
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         await TokenService.saveTokens(
@@ -31,7 +29,6 @@ class AuthService {
       throw Exception('Erro de conexão. Verifique sua internet.');
     }
   }
-
   static Future<Map<String, dynamic>> register({
     required String nome,
     required String email,
@@ -47,7 +44,6 @@ class AuthService {
           'senha': senha,
         }),
       );
-
       if (response.statusCode == 200 || response.statusCode == 201) {
         return jsonDecode(response.body);
       } else if (response.statusCode == 409) {
@@ -60,7 +56,6 @@ class AuthService {
       throw Exception('Erro de conexão. Verifique sua internet.');
     }
   }
-
   static Future<void> logout() async {
     try {
       final refreshToken = await TokenService.getRefreshToken();
@@ -70,7 +65,6 @@ class AuthService {
     } catch (_) {}
     await TokenService.deleteTokens();
   }
-
   static Future<bool> isLoggedIn() async {
     final token = await TokenService.getAccessToken();
     return token != null;

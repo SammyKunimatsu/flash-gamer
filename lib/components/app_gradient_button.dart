@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-
 class AppGradientButton extends StatelessWidget {
   final String label;
   final IconData? icon;
@@ -13,7 +11,6 @@ class AppGradientButton extends StatelessWidget {
   final FontWeight fontWeight;
   final double letterSpacing;
   final EdgeInsetsGeometry? padding;
-
   const AppGradientButton({
     super.key,
     required this.label,
@@ -28,7 +25,6 @@ class AppGradientButton extends StatelessWidget {
     this.letterSpacing = 1.5,
     this.padding,
   });
-
   factory AppGradientButton.pill({
     Key? key,
     required String label,
@@ -49,14 +45,12 @@ class AppGradientButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
     );
   }
-
   @override
   Widget build(BuildContext context) {
     final bool isDisabled = onPressed == null || isLoading;
     final colors = isDisabled && !isLoading
         ? [Colors.grey.shade400, Colors.grey.shade500]
         : gradientColors;
-
     return Container(
       height: padding != null ? null : height,
       padding: padding,
@@ -74,7 +68,10 @@ class AppGradientButton extends StatelessWidget {
               ],
       ),
       child: padding != null
-          ? _buildContent(isDisabled)
+          ? GestureDetector(
+              onTap: isDisabled ? null : onPressed,
+              child: _buildContent(isDisabled),
+            )
           : ElevatedButton(
               onPressed: isDisabled ? null : onPressed,
               style: ElevatedButton.styleFrom(
@@ -88,7 +85,6 @@ class AppGradientButton extends StatelessWidget {
             ),
     );
   }
-
   Widget _buildContent(bool isDisabled) {
     if (isLoading) {
       return const Center(
@@ -102,7 +98,6 @@ class AppGradientButton extends StatelessWidget {
         ),
       );
     }
-
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       mainAxisSize: padding != null ? MainAxisSize.min : MainAxisSize.max,

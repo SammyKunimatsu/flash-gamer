@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-
 class FloatingShape extends StatelessWidget {
   final Animation<double> animation;
   final double? top;
@@ -15,7 +14,6 @@ class FloatingShape extends StatelessWidget {
   final double amplitude;
   final double phaseOffset;
   final int alpha;
-
   const FloatingShape({
     super.key,
     required this.animation,
@@ -32,7 +30,6 @@ class FloatingShape extends StatelessWidget {
     this.phaseOffset = 0,
     this.alpha = 180,
   });
-
   factory FloatingShape.fractional({
     Key? key,
     required Animation<double> animation,
@@ -66,7 +63,6 @@ class FloatingShape extends StatelessWidget {
       alpha: alpha,
     );
   }
-
   @override
   Widget build(BuildContext context) {
     return AnimatedBuilder(
@@ -97,13 +93,11 @@ class FloatingShape extends StatelessWidget {
     );
   }
 }
-
 class _FractionalFloatingShape extends FloatingShape {
   final double? topFrac;
   final double? bottomFrac;
   final double? leftFrac;
   final double? rightFrac;
-
   const _FractionalFloatingShape({
     super.key,
     required super.animation,
@@ -120,7 +114,6 @@ class _FractionalFloatingShape extends FloatingShape {
     super.phaseOffset,
     super.alpha,
   });
-
   @override
   Widget build(BuildContext context) {
     final sz = MediaQuery.of(context).size;

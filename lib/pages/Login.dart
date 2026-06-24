@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flashgamer/services/auth_service.dart';
 import 'package:flashgamer/components/components.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.title});
-
   final String title;
-
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
-
 class _LoginPageState extends State<LoginPage>
     with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
@@ -21,7 +17,6 @@ class _LoginPageState extends State<LoginPage>
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
-
   @override
   void initState() {
     super.initState();
@@ -42,7 +37,6 @@ class _LoginPageState extends State<LoginPage>
     ));
     _animController.forward();
   }
-
   @override
   void dispose() {
     _emailController.dispose();
@@ -50,18 +44,14 @@ class _LoginPageState extends State<LoginPage>
     _animController.dispose();
     super.dispose();
   }
-
   Future<void> _handleLogin() async {
     if (!_formKey.currentState!.validate()) return;
-
     setState(() => _isLoading = true);
-
     try {
       await AuthService.login(
         _emailController.text.trim(),
         _passwordController.text,
       );
-
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, '/initial');
     } catch (e) {
@@ -83,7 +73,6 @@ class _LoginPageState extends State<LoginPage>
       if (mounted) setState(() => _isLoading = false);
     }
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -120,9 +109,7 @@ class _LoginPageState extends State<LoginPage>
                         child: const Icon(Icons.flash_on_rounded,
                             color: Colors.white, size: 48),
                       ),
-
                       const SizedBox(height: 24),
-
                       ShaderMask(
                         shaderCallback: (bounds) => const LinearGradient(
                           colors: [Color(0xFFE9D5FF), Color(0xFFF9A8D4)],
@@ -137,9 +124,7 @@ class _LoginPageState extends State<LoginPage>
                           ),
                         ),
                       ),
-
                       const SizedBox(height: 8),
-
                       Text(
                         'Sua jornada épica começa aqui',
                         style: TextStyle(
@@ -148,9 +133,7 @@ class _LoginPageState extends State<LoginPage>
                           letterSpacing: 0.5,
                         ),
                       ),
-
                       const SizedBox(height: 48),
-
                       GlassCard(
                         child: Form(
                           key: _formKey,
@@ -166,9 +149,7 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                                 textAlign: TextAlign.center,
                               ),
-
                               const SizedBox(height: 28),
-
                               AppTextField(
                                 label: 'Email',
                                 hint: 'seu@email.com',
@@ -187,9 +168,7 @@ class _LoginPageState extends State<LoginPage>
                                   return null;
                                 },
                               ),
-
                               const SizedBox(height: 20),
-
                               AppTextField(
                                 label: 'Senha',
                                 hint: '••••••••',
@@ -220,18 +199,14 @@ class _LoginPageState extends State<LoginPage>
                                   return null;
                                 },
                               ),
-
                               const SizedBox(height: 32),
-
                               AppGradientButton(
                                 label: 'ENTRAR',
                                 icon: Icons.login_rounded,
                                 isLoading: _isLoading,
                                 onPressed: _handleLogin,
                               ),
-
                               const SizedBox(height: 16),
-
                               AppOutlinedButton(
                                 label: 'CRIAR CONTA',
                                 icon: Icons.person_add_alt_1_rounded,

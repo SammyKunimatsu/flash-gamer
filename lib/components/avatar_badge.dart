@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-
-
 class AvatarBadge extends StatelessWidget {
   final int? level;
   final double size;
@@ -9,7 +7,6 @@ class AvatarBadge extends StatelessWidget {
   final Color innerColor;
   final Color badgeColor;
   final double borderWidth;
-
   const AvatarBadge({
     super.key,
     this.level,
@@ -20,7 +17,6 @@ class AvatarBadge extends StatelessWidget {
     this.badgeColor = const Color(0xFFF59E0B),
     this.borderWidth = 4,
   });
-
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -59,7 +55,6 @@ class AvatarBadge extends StatelessWidget {
                 ),
           ),
         ),
-
         if (level != null)
           Positioned(
             bottom: -8,

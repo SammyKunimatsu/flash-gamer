@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class AppOutlinedButton extends StatelessWidget {
   final String label;
   final IconData? icon;
@@ -12,7 +11,6 @@ class AppOutlinedButton extends StatelessWidget {
   final double fontSize;
   final FontWeight fontWeight;
   final double letterSpacing;
-
   const AppOutlinedButton({
     super.key,
     required this.label,
@@ -27,7 +25,6 @@ class AppOutlinedButton extends StatelessWidget {
     this.fontWeight = FontWeight.w700,
     this.letterSpacing = 1.5,
   });
-
   @override
   Widget build(BuildContext context) {
     return Container(

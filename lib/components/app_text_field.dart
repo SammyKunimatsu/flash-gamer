@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 class AppTextField extends StatelessWidget {
   final String? label;
   final String hint;
@@ -12,7 +11,6 @@ class AppTextField extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final double borderRadius;
   final bool isDarkTheme;
-
   const AppTextField({
     super.key,
     this.label,
@@ -27,7 +25,6 @@ class AppTextField extends StatelessWidget {
     this.borderRadius = 14,
     this.isDarkTheme = true,
   });
-
   @override
   Widget build(BuildContext context) {
     final textColor = isDarkTheme ? Colors.white : Colors.black87;
@@ -36,7 +33,6 @@ class AppTextField extends StatelessWidget {
     final fillColor = isDarkTheme ? Colors.white.withAlpha(13) : Colors.grey.shade100;
     final borderColor = isDarkTheme ? Colors.white.withAlpha(25) : Colors.grey.shade300;
     final labelColor = isDarkTheme ? Colors.white.withAlpha(180) : Colors.grey.shade700;
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
