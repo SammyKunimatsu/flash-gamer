@@ -10,7 +10,8 @@ class AppTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final ValueChanged<String>? onChanged;
   final double borderRadius;
-  final bool isDarkTheme;
+  final bool? isDarkTheme;
+  final int maxLines;
   const AppTextField({
     super.key,
     this.label,
@@ -23,16 +24,20 @@ class AppTextField extends StatelessWidget {
     this.validator,
     this.onChanged,
     this.borderRadius = 14,
-    this.isDarkTheme = true,
+    this.isDarkTheme,
+    this.maxLines = 1,
   });
   @override
   Widget build(BuildContext context) {
-    final textColor = isDarkTheme ? Colors.white : Colors.black87;
-    final hintColor = isDarkTheme ? Colors.white.withAlpha(70) : Colors.grey.shade400;
-    final iconColor = isDarkTheme ? Colors.white.withAlpha(120) : Colors.grey.shade500;
-    final fillColor = isDarkTheme ? Colors.white.withAlpha(13) : Colors.grey.shade100;
-    final borderColor = isDarkTheme ? Colors.white.withAlpha(25) : Colors.grey.shade300;
-    final labelColor = isDarkTheme ? Colors.white.withAlpha(180) : Colors.grey.shade700;
+    final scaffoldBgColor = Theme.of(context).scaffoldBackgroundColor;
+    final bool useDarkTheme = isDarkTheme ?? (scaffoldBgColor.computeLuminance() < 0.5);
+
+    final textColor = useDarkTheme ? Colors.white : Colors.black87;
+    final hintColor = useDarkTheme ? Colors.white.withAlpha(70) : Colors.grey.shade400;
+    final iconColor = useDarkTheme ? Colors.white.withAlpha(120) : Colors.grey.shade500;
+    final fillColor = useDarkTheme ? Colors.white.withAlpha(13) : Colors.grey.shade100;
+    final borderColor = useDarkTheme ? Colors.white.withAlpha(25) : Colors.grey.shade300;
+    final labelColor = useDarkTheme ? Colors.white.withAlpha(180) : Colors.grey.shade700;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -53,6 +58,7 @@ class AppTextField extends StatelessWidget {
           controller: controller,
           obscureText: obscureText,
           keyboardType: keyboardType,
+          maxLines: maxLines,
           onChanged: onChanged,
           style: TextStyle(color: textColor, fontSize: 15),
           validator: validator,

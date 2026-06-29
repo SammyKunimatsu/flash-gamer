@@ -1,8 +1,26 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'token_service.dart';
+
 class ApiService {
-  static const String baseUrl = 'https://flashgamer.discloud.app';
+  static final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+  
+  static String get baseUrl {
+    // if (kDebugMode) {
+    //   if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+    //     return 'http://10.0.2.2:3000';
+    //   }
+    //   return 'http://localhost:3000';
+    // }
+    return 'https://flashgamer.discloud.app';
+  }
+
+  static void _handleSessionExpired() {
+    navigatorKey.currentState?.pushNamedAndRemoveUntil('/login', (route) => false);
+    throw ApiException(401, 'Sessão expirada. Faça login novamente.');
+  }
+
   static Future<Map<String, String>> _authHeaders() async {
     final token = await TokenService.getAccessToken();
     return {
@@ -41,7 +59,7 @@ class ApiService {
         final newHeaders = await _authHeaders();
         response = await http.get(uri, headers: newHeaders);
       } else {
-        throw ApiException(401, 'Sessão expirada. Faça login novamente.');
+        _handleSessionExpired();
       }
     }
     return response;
@@ -56,7 +74,7 @@ class ApiService {
         final newHeaders = await _authHeaders();
         response = await http.post(uri, headers: newHeaders, body: body != null ? jsonEncode(body) : null);
       } else {
-        throw ApiException(401, 'Sessão expirada. Faça login novamente.');
+        _handleSessionExpired();
       }
     }
     return response;
@@ -71,7 +89,22 @@ class ApiService {
         final newHeaders = await _authHeaders();
         response = await http.put(uri, headers: newHeaders, body: body != null ? jsonEncode(body) : null);
       } else {
-        throw ApiException(401, 'Sessão expirada. Faça login novamente.');
+        _handleSessionExpired();
+      }
+    }
+    return response;
+  }
+  static Future<http.Response> delete(String path) async {
+    final uri = Uri.parse('$baseUrl$path');
+    final headers = await _authHeaders();
+    var response = await http.delete(uri, headers: headers);
+    if (response.statusCode == 401) {
+      final refreshed = await _refreshToken();
+      if (refreshed) {
+        final newHeaders = await _authHeaders();
+        response = await http.delete(uri, headers: newHeaders);
+      } else {
+        _handleSessionExpired();
       }
     }
     return response;

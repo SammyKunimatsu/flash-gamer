@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flashgamer/components/components.dart';
+import 'package:flashgamer/models/user_entity.dart';
+import 'package:flashgamer/models/mission_entity.dart';
 import 'package:flashgamer/services/user_service.dart';
 import 'package:flashgamer/services/mission_service.dart';
+
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
   @override
   State<HomePage> createState() => _HomePageState();
 }
+
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   int _selectedTab = 1;
@@ -19,8 +23,49 @@ class _HomePageState extends State<HomePage>
   int _coins = 1250;
   int _streak = 3;
   List<Map<String, dynamic>> _topHeroes = [];
-  List<Map<String, dynamic>> _missions = [];
+  List<MissionEntity> _missions = [];
   bool _isLoading = true;
+
+  final Map<int, bool> _expandedCards = {};
+  final List<Map<String, dynamic>> _learnCards = const [
+    {
+      'title': 'Quem descobriu o caminho marítimo para as Índias?',
+      'subject': 'História',
+      'icon': Icons.menu_book_rounded,
+      'color': Color(0xFFF3E8FF),
+      'textColor': Color(0xFF6B21A8),
+      'borderColor': Color(0xFFC084FC),
+      'content': 'Vasco da Gama foi um navegador e explorador português. Na Era dos Descobrimentos, destacou-se por ter comandado a primeira expedição marítima da Europa à Índia, em uma das viagens mais célebres da história colonialista de Portugal. A rota permitiu consolidar a hegemonia comercial portuguesa e conectar o Ocidente e Oriente de forma permanente por mar.',
+    },
+    {
+      'title': 'Aproximação do valor de Pi (π)',
+      'subject': 'Matemática',
+      'icon': Icons.calculate_rounded,
+      'color': Color(0xFFE0F2FE),
+      'textColor': Color(0xFF0369A1),
+      'borderColor': Color(0xFF38BDF8),
+      'content': 'Pi (π) é uma constante matemática definida pela razão entre a circunferência de um círculo e seu diâmetro. Seu valor aproximado com 5 casas decimais é 3.14159. Trata-se de um número irracional, o que significa que sua representação decimal é infinita e não periódica, sendo fundamental na geometria e trigonometria.',
+    },
+    {
+      'title': 'O que é Silogismo Lógico?',
+      'subject': 'Lógica',
+      'icon': Icons.psychology_rounded,
+      'color': Color(0xFFFEF3C7),
+      'textColor': Color(0xFFB45309),
+      'borderColor': Color(0xFFFBBF24),
+      'content': 'Um silogismo lógico é uma forma de raciocínio dedutivo que consiste em uma premissa maior, uma premissa menor e uma conclusão lógica. Por exemplo:\n• Premissa Maior: Todos os humanos são mortais.\n• Premissa Menor: Sócrates é humano.\n• Conclusão: Logo, Sócrates é mortal.\nMuito útil nos testes e desafios intelectuais!',
+    },
+    {
+      'title': 'Estrutura do Conto Épico',
+      'subject': 'Redação',
+      'icon': Icons.create_rounded,
+      'color': Color(0xFFF3F4F6),
+      'textColor': Color(0xFF374151),
+      'borderColor': Color(0xFF9CA3AF),
+      'content': 'Um conto épico foca nas conquistas heróicas, grandes viagens e batalhas lendárias. Ele geralmente contém elementos de fantasia ou mitológicos. Dica de ouro para redigir um bom conto: divida a narrativa em Introdução da Missão, Confluxo de forças e a Resolução vitoriosa do Herói com a colheita dos frutos!',
+    },
+  ];
+
   static const Map<String, _CategoryTheme> _categoryThemes = {
     'História': _CategoryTheme(
       icon: Icons.quiz_rounded,
@@ -58,6 +103,7 @@ class _HomePageState extends State<HomePage>
       iconColor: Color(0xFFD97706),
     ),
   };
+
   static const _CategoryTheme _defaultTheme = _CategoryTheme(
     icon: Icons.flag_rounded,
     borderColor: Color(0xFF7C3AED),
@@ -65,6 +111,7 @@ class _HomePageState extends State<HomePage>
     iconBg: Color(0xFFF3E8FF),
     iconColor: Color(0xFF7C3AED),
   );
+
   @override
   void initState() {
     super.initState();
@@ -76,26 +123,27 @@ class _HomePageState extends State<HomePage>
     _animCtrl.forward();
     _loadData();
   }
+
   Future<void> _loadData() async {
     try {
       final profileFuture = UserService.getMyProfile();
       final rankingFuture = UserService.getRanking();
       final missionsFuture = MissionService.list();
-      final profile = await profileFuture;
+      final UserEntity profile = await profileFuture;
       final ranking = await rankingFuture;
-      List<Map<String, dynamic>> missions = [];
+      List<MissionEntity> missions = [];
       try {
         missions = await missionsFuture;
       } catch (_) {}
       if (!mounted) return;
       setState(() {
-        _userName = profile['nome'] ?? 'Explorador';
-        _userLevel = profile['nivel'] ?? 12;
-        _currentXp = profile['xp'] ?? 550;
-        _maxXp = profile['xpProximoNivel'] ?? 1000;
-        _coins = profile['saldo'] ?? 1250;
-        _streak = profile['streak'] ?? 3;
-        _topHeroes = (ranking as List)
+        _userName = profile.nome;
+        _userLevel = profile.lv;
+        _currentXp = profile.xp;
+        _maxXp = profile.lv * 1000;
+        _coins = profile.saldo.toInt();
+        _streak = profile.diasSeguidos;
+        _topHeroes = ranking
             .take(3)
             .map((e) => e as Map<String, dynamic>)
             .toList();
@@ -107,21 +155,24 @@ class _HomePageState extends State<HomePage>
       setState(() => _isLoading = false);
     }
   }
+
   @override
   void dispose() {
     _animCtrl.dispose();
     super.dispose();
   }
+
   final List<_NavItem> _navItems = const [
     _NavItem(label: 'Aprender', icon: Icons.school_rounded),
     _NavItem(label: 'Missões', icon: Icons.flag_rounded),
     _NavItem(label: 'Ranking', icon: Icons.emoji_events_rounded),
     _NavItem(label: 'Loja', icon: Icons.store_rounded),
   ];
-  static const List<Map<String, dynamic>> _fallbackMissions = [
-    {'id': 0, 'nome': 'Quiz de História', 'descricao': 'Desvende os mistérios do Império Romano.', 'categoria': 'História', 'xp_recompensa': 150},
-    {'id': 0, 'nome': 'Desafio de Lógica', 'descricao': 'Resolva 5 puzzles de pensamento lateral.', 'categoria': 'Lógica', 'xp_recompensa': 200},
-    {'id': 0, 'nome': 'Escrita Épica', 'descricao': 'Redija um conto heroico de 3 parágrafos.', 'categoria': 'Redação', 'xp_recompensa': 300},
+
+  static const List<MissionEntity> _fallbackMissions = [
+    MissionEntity(id: 0, nome: 'Quiz de História', descricao: 'Desvende os mistérios do Império Romano.', categoria: 'História', xpRecompensa: 150),
+    MissionEntity(id: 0, nome: 'Desafio de Lógica', descricao: 'Resolva 5 puzzles de pensamento lateral.', categoria: 'Lógica', xpRecompensa: 200),
+    MissionEntity(id: 0, nome: 'Escrita Épica', descricao: 'Redija um conto heroico de 3 parágrafos.', categoria: 'Redação', xpRecompensa: 300),
   ];
   _CategoryTheme _themeFor(String? categoria) {
     return _categoryThemes[categoria] ?? _defaultTheme;
@@ -147,11 +198,12 @@ class _HomePageState extends State<HomePage>
             children: [
               isMobile ? _buildMobileTopBar() : _buildDesktopTopBar(),
               Expanded(
-                child: SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                  child: _buildBody(context),
-                ),
+                child: _isLoading
+                    ? const Center(child: CircularProgressIndicator(color: Color(0xFF7C3AED)))
+                    : SingleChildScrollView(
+                        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                        child: _buildBody(context),
+                      ),
               ),
             ],
           ),
@@ -274,27 +326,43 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           const SizedBox(width: 8),
-          Container(
-            width: 30,
-            height: 30,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF7C3AED).withAlpha(40),
-                  blurRadius: 6,
-                ),
-              ],
+          IconButton(
+            icon: const Icon(Icons.admin_panel_settings_rounded, color: Color(0xFF7C3AED), size: 20),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: () => Navigator.pushNamed(context, '/admin').then((_) => _loadData()),
+          ),
+          const SizedBox(width: 8),
+          GestureDetector(
+            onTap: () => showProfilePopup(
+              context: context,
+              nome: _userName,
+              lv: _userLevel,
+              xp: _currentXp,
+              saldo: _coins,
+              diasSeguidos: _streak,
             ),
-            child: const Padding(
-              padding: EdgeInsets.all(2),
-              child: CircleAvatar(
-                backgroundColor: Color(0xFF3B1564),
-                child:
-                    Icon(Icons.person_rounded, color: Colors.white, size: 16),
+            child: Container(
+              width: 30,
+              height: 30,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7C3AED).withAlpha(40),
+                    blurRadius: 6,
+                  ),
+                ],
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(2),
+                child: CircleAvatar(
+                  backgroundColor: Color(0xFF3B1564),
+                  child: Icon(Icons.person_rounded, color: Colors.white, size: 16),
+                ),
               ),
             ),
           ),
@@ -412,27 +480,43 @@ class _HomePageState extends State<HomePage>
             ),
           ),
           const SizedBox(width: 10),
-          Container(
-            width: 34,
-            height: 34,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              gradient: const LinearGradient(
-                colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: const Color(0xFF7C3AED).withAlpha(40),
-                  blurRadius: 8,
-                ),
-              ],
+          IconButton(
+            icon: const Icon(Icons.admin_panel_settings_rounded, color: Color(0xFF7C3AED), size: 24),
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            onPressed: () => Navigator.pushNamed(context, '/admin').then((_) => _loadData()),
+          ),
+          const SizedBox(width: 10),
+          GestureDetector(
+            onTap: () => showProfilePopup(
+              context: context,
+              nome: _userName,
+              lv: _userLevel,
+              xp: _currentXp,
+              saldo: _coins,
+              diasSeguidos: _streak,
             ),
-            child: const Padding(
-              padding: EdgeInsets.all(2),
-              child: CircleAvatar(
-                backgroundColor: Color(0xFF3B1564),
-                child:
-                    Icon(Icons.person_rounded, color: Colors.white, size: 18),
+            child: Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF7C3AED), Color(0xFFDB2777)],
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: const Color(0xFF7C3AED).withAlpha(40),
+                    blurRadius: 8,
+                  ),
+                ],
+              ),
+              child: const Padding(
+                padding: EdgeInsets.all(2),
+                child: CircleAvatar(
+                  backgroundColor: Color(0xFF3B1564),
+                  child: Icon(Icons.person_rounded, color: Colors.white, size: 18),
+                ),
               ),
             ),
           ),
@@ -442,6 +526,32 @@ class _HomePageState extends State<HomePage>
   }
   Widget _buildBody(BuildContext context) {
     final isWide = MediaQuery.of(context).size.width > 700;
+    if (_selectedTab == 0) {
+      if (isWide) {
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(
+              flex: 3,
+              child: _buildLearnSection(),
+            ),
+            const SizedBox(width: 20),
+            SizedBox(
+              width: 260,
+              child: _buildTopHeroesCard(),
+            ),
+          ],
+        );
+      }
+      return Column(
+        children: [
+          _buildLearnSection(),
+          const SizedBox(height: 24),
+          _buildTopHeroesCard(),
+        ],
+      );
+    }
+
     if (isWide) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -472,6 +582,131 @@ class _HomePageState extends State<HomePage>
         const SizedBox(height: 24),
         _buildMissionsSection(),
       ],
+    );
+  }
+
+  Widget _buildLearnSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Conteúdos de Aprendizado 📚',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w800,
+            color: Color(0xFF1E1B4B),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          'Estude as matérias abaixo para se preparar para os desafios das missões diárias!',
+          style: TextStyle(fontSize: 13, color: Colors.grey.shade600),
+        ),
+        const SizedBox(height: 20),
+        Column(
+          children: List.generate(_learnCards.length, (i) => _buildLearnCard(i)),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildLearnCard(int idx) {
+    final card = _learnCards[idx];
+    final bool isExp = _expandedCards[idx] ?? false;
+    final Color color = card['color'];
+    final Color textColor = card['textColor'];
+    final Color borderColor = card['borderColor'];
+
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: isExp ? borderColor : Colors.grey.shade200, width: 1.5),
+        boxShadow: [
+          BoxShadow(
+            color: isExp ? borderColor.withAlpha(20) : Colors.black.withAlpha(5),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          children: [
+            InkWell(
+              onTap: () => setState(() => _expandedCards[idx] = !isExp),
+              child: Padding(
+                padding: const EdgeInsets.all(20),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: color,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Icon(card['icon'], color: textColor, size: 20),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            card['subject'].toUpperCase(),
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w800,
+                              color: textColor,
+                              letterSpacing: 1.0,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            card['title'],
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFF1E1B4B),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Icon(
+                      isExp ? Icons.keyboard_arrow_up_rounded : Icons.keyboard_arrow_down_rounded,
+                      color: Colors.grey.shade400,
+                      size: 24,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            if (isExp)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Divider(color: Colors.grey.shade100, height: 1),
+                    const SizedBox(height: 16),
+                    Text(
+                      card['content'],
+                      style: const TextStyle(
+                        fontSize: 14,
+                        color: Colors.black87,
+                        height: 1.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
   Widget _buildWelcomeCard() {
@@ -634,12 +869,12 @@ class _HomePageState extends State<HomePage>
       ],
     );
   }
-  Widget _buildMissionCard(Map<String, dynamic> mission) {
-    final theme = _themeFor(mission['categoria']);
-    final int xp = mission['xp_recompensa'] ?? 0;
-    final String title = mission['nome'] ?? 'Missão';
-    final String description = mission['descricao'] ?? '';
-    final int missionId = mission['id'] ?? 0;
+  Widget _buildMissionCard(MissionEntity mission) {
+    final theme = _themeFor(mission.categoria);
+    final int xp = mission.xpRecompensa;
+    final String title = mission.nome;
+    final String description = mission.descricao;
+    final int missionId = mission.id;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -711,7 +946,10 @@ class _HomePageState extends State<HomePage>
             child: AppGradientButton(
               label: 'Iniciar Missão',
               onPressed: () {
-                Navigator.pushNamed(context, '/question', arguments: missionId);
+                Navigator.pushNamed(context, '/question', arguments: {
+                  'quizId': mission.quizId,
+                  'missionId': missionId,
+                }).then((_) => _loadData());
               },
               height: 40,
               borderRadius: 10,

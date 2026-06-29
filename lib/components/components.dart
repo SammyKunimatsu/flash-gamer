@@ -6,3 +6,4 @@ export 'avatar_badge.dart';
 export 'floating_shape.dart';
 export 'glass_card.dart';
 export 'gradient_background.dart';
+export 'profile_popup.dart';
